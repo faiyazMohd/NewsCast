@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 export default class NewsItem extends Component {
   render() {
-    let { title, description, imageUrl, newsUrl, date, author, name } =
+    let { title, description, imageUrl, newsUrl, date } =
       this.props;
     return (
       <div className="card">
@@ -14,13 +14,6 @@ export default class NewsItem extends Component {
         />
         <div className="card-body">
           <h5 className="card-title">{title}...</h5>
-          <p className="card-text">
-            <small className="text-muted">
-              {" "}
-              Author - {author ? author : "unknown"}{" "}
-              <span className="badge bg-secondary">{name}</span>
-            </small>
-          </p>
           <p className="card-text">
             <small className="text-muted">
               Published at -{" "}
@@ -36,7 +29,7 @@ export default class NewsItem extends Component {
             rel="noreferrer"
             className="btn btn-sm btn-dark"
           >
-            Go somewhere
+            Read More
           </a>
         </div>
       </div>

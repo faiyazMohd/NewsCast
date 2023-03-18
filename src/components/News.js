@@ -6,14 +6,12 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 export default class News extends Component {
   static defaultProps = {
-    pageSize: 8,
-    category: "general",
+    category: "top",
     title: "NewsCast : 🇮🇳 India - Top Headlines",
     countryCode:"in",
     countryName:"🇮🇳 India"
   };
   static propTypes = {
-    pageSize: PropTypes.number,
     category: PropTypes.string,
     apiKey: PropTypes.string,
   };
@@ -27,14 +25,15 @@ export default class News extends Component {
       loading: false,
       page: 1,
       totalResults: 0,
+      nextPage:""
     };
-    if (this.props.category === "general") {
+    if (this.props.category === "top") {
       this.props.setPathToHighLight("/");
     } else {
       this.props.setPathToHighLight("/" + this.props.category);
     }
     document.title = `NewsCast - ${(this.props.countryName).slice(5)} - ${
-      this.props.category === "general"
+      this.props.category === "top"
         ? "Get your daily dose of news for free!"
         : this.capitalize(this.props.category)
     }`;
@@ -42,7 +41,8 @@ export default class News extends Component {
 
   async updatePage() {
     this.props.setProgress(20);
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.countryCode}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    let url = `https://newsdata.io/api/1/news?apikey=${this.props.apiKey}&country=${this.props.countryCode}&category=${this.props.category}`
+    // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.countryCode}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
     this.setState({ loading: true });
     let data = await fetch(url);
     this.props.setProgress(50);
@@ -50,14 +50,19 @@ export default class News extends Component {
     this.props.setProgress(70);
     console.log(parsedData);
     this.setState({
-      articles: parsedData.articles,
+      articles: parsedData.results,
       totalResults: parsedData.totalResults,
       loading: false,
+      nextPage:parsedData.nextPage
     });
     this.props.setProgress(100);
   }
   async componentDidMount() {
     this.updatePage();
+    // if (this.state.totalResults === 0) {
+    //   document.getElementById("mainContainer").innerHTML =
+    //     "No Results Found!!";
+    // }
   }
   async componentDidUpdate() {
     if (this.props.pageReload) {
@@ -67,136 +72,71 @@ export default class News extends Component {
   }
   
 
-  handlePrevClick = async () => {
-    // let url = `https://newsapi.org/v2/top-headlines?country=${
-    //   this.props.countryCode
-    // }&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${
-    //   this.state.page - 1
-    // }&pageSize=${this.props.pageSize}`;
-    // this.setState({ loading: true });
-    // let data = await fetch(url);
-    // let parsedData = await data.json();
-    // console.log(parsedData);
-    // this.setState({
-    //   page: this.state.page - 1,
-    //   articles: parsedData.articles,
-    //   loading: false,
-    // });
-
-    //one way of doing writing await waits for state to change
-    // await this.setState({
-    //   page: this.state.page - 1,
-    // });
-    // this.updatePage();
-
-    //another way of doing
-    this.setState(
-      {
-        page: this.state.page - 1,
-      },
-      this.updatePage
-    );
-  };
-  handleNextClick = async () => {
-    if (
-      !(
-        this.state.page + 1 >
-        Math.ceil(this.state.totalResults / this.props.pageSize)
-      )
-    ) {
-      //another way of doing
-      this.setState(
-        {
-          page: this.state.page + 1,
-        },
-        this.updatePage
-      );
-    }
-  };
 
   fetchMoreData = async () => {
     this.setState({ page: this.state.page + 1 });
-    let url = `https://newsapi.org/v2/top-headlines?country=${
-      this.props.countryCode
-    }&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${
-      this.state.page + 1
-    }&pageSize=${this.props.pageSize}`;
+    let url = `https://newsdata.io/api/1/news?apikey=${this.props.apiKey}&country=${this.props.countryCode}&category=${this.props.category}&page=${this.state.nextPage}`;
 
     let data = await fetch(url);
     let parsedData = await data.json();
     this.setState({
-      articles: this.state.articles.concat(parsedData.articles),
+      articles: this.state.articles.concat(parsedData.results),
       totalResults: parsedData.totalResults,
+      nextPage:parsedData.nextPage
     });
-    if (
-      this.state.page + 1 >
-      Math.ceil(this.state.totalResults / this.props.pageSize)
-    ) {
-      document.getElementById("newsContainer").innerHTML +=
-        "No More Results Found!!";
-    }
+    console.log(this.state.articles);
+    // if (
+    //   (this.state.page  >
+    //   Math.ceil(this.state.totalResults / 10 ) || (this.state.nextPage === null))
+    // ) {
+    //   console.log(this.state.nextPage);
+    //   document.getElementById("newsContainer").innerHTML +=
+    //     "No More Results Found!!";
+    // }
+   
   };
   render() {
     return (
       <>
-        <div className="container my-3 text-center">
+        <div className="container my-3 text-center" >
           <h1 className="text-center" style={{marginTop: "80px"}}>{this.props.title}</h1>
           {this.state.loading && <Spinner />}
+          <div id="mainContainer " className="my-4"><h3>{this.state.totalResults === 0 && this.state.nextPage === null?"No Results Found!!":""}</h3></div>
           <InfiniteScroll
             dataLength={this.state.articles.length}
             next={this.fetchMoreData}
-            hasMore={this.state.articles.length !== this.state.totalResults}
+            hasMore={this.state.nextPage}
             loader={<Spinner />}
           >
             <div className="container text-center" id="newsContainer">
               <div className="row ">
                 {this.state.articles.map((element, index) => {
                   return (
-                    <div className="col-md-4 my-4" key={element.url + index}>
+                    <div className="col-md-4 my-4" key={element.link + index}>
                       <NewsItem
                         title={element.title ? element.title.slice(0, 45) : ""}
-                        date={new Date(element.publishedAt)}
+                        date={new Date(element.pubDate)}
                         description={
                           element.description
                             ? element.description.slice(0, 100)
                             : ""
                         }
                         imageUrl={
-                          element.urlToImage
-                            ? element.urlToImage
+                          element.image_url
+                            ? element.image_url
                             : `https://source.unsplash.com/400x300/?${this.props.category}`
                         }
-                        newsUrl={element.url}
-                        author={element.author}
-                        name={element.source.name}
+                        newsUrl={element.link}
+                        name={element.source_id}
                       />
                     </div>
                   );
                 })}
               </div>
+              <div className="my-3"><h4>{this.state.totalResults > 0  && this.state.nextPage === null ?"No More Results Found!!":""}</h4></div>
+              
             </div>
           </InfiniteScroll>
-          {/* <div className="container d-flex justify-content-between">
-          <button
-            disabled={this.state.page <= 1}
-            type="button"
-            className="btn btn-dark"
-            onClick={this.handlePrevClick}
-          >
-            &larr; Previous
-          </button>
-          <button
-            disabled={
-              this.state.page + 1 >
-              Math.ceil(this.state.totalResults / this.props.pageSize)
-            }
-            type="button"
-            className="btn btn-dark px-4"
-            onClick={this.handleNextClick}
-            >
-            Next &rarr;
-          </button>
-        </div> */}
         </div>
       </>
     );

@@ -10,7 +10,6 @@ export default class App extends Component {
   apiKey2 = process.env.REACT_APP_NEWS_API_2;
   apiKey3 = process.env.REACT_APP_NEWS_API_3;
   apiKey4 = process.env.REACT_APP_NEWS_API_4;
-  pageSize = 15;
 
   state = {
     progress: 0,
@@ -26,10 +25,11 @@ export default class App extends Component {
   setPathToHighLight = (path) => {
     this.setState({ pathToHighLight: path });
   };
-  setCountry = (countryCode, countryName) => {
+  setCountry = (countryCode, countryName,countryLang) => {
     this.setState({
       countryCode: countryCode,
-      countryName:countryName
+      countryName:countryName,
+      countryLang:countryLang
       });
   };
 
@@ -57,13 +57,12 @@ export default class App extends Component {
               element={
                 <News
                   setProgress={this.setProgress}
-                  key="general"
+                  key="top"
                   setPathToHighLight={this.setPathToHighLight}
                   title={`NewsCast ${(this.state.countryName)}: - Top Headlines`}
-                  pageSize={this.pageSize}
                   countryCode={this.state.countryCode}
                   countryName={this.state.countryName}
-                  category="general"
+                  category="top"
                   apiKey={this.apiKey4}
                   pageReload={this.state.pageReload}
                   setPageReload={this.setPageReload}
@@ -79,7 +78,6 @@ export default class App extends Component {
                   key="business"
                   setPathToHighLight={this.setPathToHighLight}
                   title={`${this.state.countryName}  :  Top Headlines - Business`}
-                  pageSize={this.pageSize}
                   countryCode={this.state.countryCode}
                   countryName={this.state.countryName}
                   category="business"
@@ -98,7 +96,6 @@ export default class App extends Component {
                   key="entertainment"
                   setPathToHighLight={this.setPathToHighLight}
                   title={`${this.state.countryName}  :  Top Headlines - Entertainment`}
-                  pageSize={this.pageSize}
                   countryCode={this.state.countryCode}
                   countryName={this.state.countryName}
                   category="entertainment"
@@ -117,7 +114,6 @@ export default class App extends Component {
                   key="health"
                   setPathToHighLight={this.setPathToHighLight}
                   title={`${this.state.countryName}  :  Top Headlines - Health`}
-                  pageSize={this.pageSize}
                   countryCode={this.state.countryCode}
                   countryName={this.state.countryName}
                   category="health"
@@ -136,7 +132,6 @@ export default class App extends Component {
                   key="science"
                   setPathToHighLight={this.setPathToHighLight}
                   title={`${this.state.countryName}  :  Top Headlines - Science`}
-                  pageSize={this.pageSize}
                   countryCode={this.state.countryCode}
                   countryName={this.state.countryName}
                   category="science"
@@ -155,7 +150,6 @@ export default class App extends Component {
                   key="sports"
                   setPathToHighLight={this.setPathToHighLight}
                   title={`${this.state.countryName}  :  Top Headlines - Sports`}
-                  pageSize={this.pageSize}
                   countryCode={this.state.countryCode}
                   countryName={this.state.countryName}
                   category="sports"
@@ -174,7 +168,6 @@ export default class App extends Component {
                   key="technology"
                   setPathToHighLight={this.setPathToHighLight}
                   title={`${this.state.countryName}  :  Top Headlines - Technology`}
-                  pageSize={this.pageSize}
                   countryCode={this.state.countryCode}
                   countryName={this.state.countryName}
                   category="technology"
@@ -184,6 +177,79 @@ export default class App extends Component {
                 />
               }
             />
+          <Route
+              exact
+              path="/environment"
+              element={
+                <News
+                  setProgress={this.setProgress}
+                  key="environment"
+                  setPathToHighLight={this.setPathToHighLight}
+                  title={`${this.state.countryName}  :  Top Headlines - Environment`}
+                  countryCode={this.state.countryCode}
+                  countryName={this.state.countryName}
+                  category="environment"
+                  apiKey={this.apiKey4}
+                  pageReload={this.state.pageReload}
+                  setPageReload={this.setPageReload}
+                />
+              }
+            />
+          <Route
+              exact
+              path="/food"
+              element={
+                <News
+                  setProgress={this.setProgress}
+                  key="food"
+                  setPathToHighLight={this.setPathToHighLight}
+                  title={`${this.state.countryName}  :  Top Headlines - Food`}
+                  countryCode={this.state.countryCode}
+                  countryName={this.state.countryName}
+                  category="food"
+                  apiKey={this.apiKey4}
+                  pageReload={this.state.pageReload}
+                  setPageReload={this.setPageReload}
+                />
+              }
+            />
+          <Route
+              exact
+              path="/politics"
+              element={
+                <News
+                  setProgress={this.setProgress}
+                  key="politics"
+                  setPathToHighLight={this.setPathToHighLight}
+                  title={`${this.state.countryName}  :  Top Headlines - Politics`}
+                  countryCode={this.state.countryCode}
+                  countryName={this.state.countryName}
+                  category="politics"
+                  apiKey={this.apiKey4}
+                  pageReload={this.state.pageReload}
+                  setPageReload={this.setPageReload}
+                />
+              }
+            />
+          <Route
+              exact
+              path="/world"
+              element={
+                <News
+                  setProgress={this.setProgress}
+                  key="world"
+                  setPathToHighLight={this.setPathToHighLight}
+                  title={` ${this.state.countryName}  :   Top Headlines - 🌎 World`}
+                  countryCode={this.state.countryCode}
+                  countryName={this.state.countryName}
+                  category="world"
+                  apiKey={this.apiKey4}
+                  pageReload={this.state.pageReload}
+                  setPageReload={this.setPageReload}
+                />
+              }
+            />
+            
           </Routes>
         </BrowserRouter>
       </>
